@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>墨斗火柴人</title>
+<meta name="description" content="水墨风火柴人格斗游戏：十几种招式和连招，单人打电脑、双人同屏对战、训练场。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&display=swap">
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<header>
+  <h1>墨斗<span>火柴人</span></h1>
+  <div class="tools">
+    <button class="tbtn" id="b-moves">招式表 <kbd>Tab</kbd></button>
+    <button class="tbtn" id="b-pause">暂停 <kbd>Esc</kbd></button>
+    <button class="tbtn" id="b-sound" aria-pressed="true">声音：开</button>
+  </div>
+</header>
+
+<div id="stage">
+  <canvas id="cv" aria-label="格斗画面"></canvas>
+
+  <div class="overlay" id="ov-menu">
+    <div class="card">
+      <h2>墨斗<small>水墨火柴人格斗</small></h2>
+      <p>十几种招式随便连：三连拳、回旋踢、升龙拳挑空、空中追打、下砸震波、投技、气功波，攒满气还能放必杀「百裂拳」。</p>
+      <div class="row">
+        <span class="label">电脑难度</span>
+        <div class="chips" id="diff" role="group" aria-label="电脑难度">
+          <button data-d="easy" aria-pressed="false">简单</button>
+          <button data-d="normal" aria-pressed="true">普通</button>
+          <button data-d="hard" aria-pressed="false">困难</button>
+        </div>
+      </div>
+      <div class="row">
+        <button class="big" id="go-cpu">单人对战</button>
+        <button class="big red" id="go-pvp">双人对战</button>
+        <button class="big ghost" id="go-train">训练场</button>
+      </div>
+      <p class="label">单人：A D 移动 · W 跳 · S 蹲 · J 拳 · K 腿 · L 格挡 · U 投 · I 气功波 · O 必杀。完整招式按 Tab。</p>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-moves" hidden>
+    <div class="card movelist">
+      <h2 style="font-size:2.4rem">招式表</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>招式</th><th>按键（单人）</th><th>效果</th></tr></thead>
+          <tbody>
+            <tr><td>移动 / 冲刺</td><td><kbd>A</kbd> <kbd>D</kbd>，双击或 <kbd>空格</kbd> 冲刺</td><td>方向键也能移动</td></tr>
+            <tr><td>跳 / 二段跳</td><td><kbd>W</kbd>，空中再按 <kbd>W</kbd></td><td>二段跳会空翻</td></tr>
+            <tr><td>格挡</td><td>按住 <kbd>L</kbd></td><td>挡住只掉一点血。被打中前一瞬间按下 = <b>完美格挡</b>，对手僵直</td></tr>
+            <tr><td>三连拳</td><td><kbd>J</kbd> <kbd>J</kbd> <kbd>J</kbd></td><td>直拳 → 摆拳 → 升龙拳，最后一下挑空</td></tr>
+            <tr><td>踢腿二连</td><td><kbd>K</kbd> <kbd>K</kbd></td><td>前踢 → 回旋踢，击倒</td></tr>
+            <tr><td>升龙拳</td><td><kbd>S</kbd>+<kbd>J</kbd></td><td>把对手打上天，可以跳起来追打</td></tr>
+            <tr><td>扫堂腿</td><td><kbd>S</kbd>+<kbd>K</kbd></td><td>低位扫倒</td></tr>
+            <tr><td>空中拳 / 飞踢</td><td>空中 <kbd>J</kbd> / <kbd>K</kbd></td><td>空中拳可以接飞踢</td></tr>
+            <tr><td>下砸</td><td>空中 <kbd>S</kbd>+<kbd>K</kbd></td><td>急速落地，震波击倒附近的人</td></tr>
+            <tr><td>冲撞</td><td>冲刺中 <kbd>J</kbd></td><td>肩膀撞飞</td></tr>
+            <tr><td>投技</td><td><kbd>U</kbd>（贴身）</td><td>过肩摔，<b>格挡不了</b>，专治一直防守的人</td></tr>
+            <tr><td>气功波</td><td><kbd>I</kbd></td><td>消耗 25 气，远程攻击</td></tr>
+            <tr><td>必杀·百裂拳</td><td><kbd>O</kbd></td><td>消耗 100 气，撞中后连打八下</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="tip">
+        <li>打中对手后可以马上接 <kbd>I</kbd> 气功波或 <kbd>O</kbd> 必杀，组成连招。</li>
+        <li>被挑飞的对手落地前都能继续打，连击越长每下伤害越低。</li>
+        <li>双人对战：1P 用 <kbd>WASD</kbd> 移动，<kbd>F</kbd> 拳 <kbd>G</kbd> 腿 <kbd>H</kbd> 格挡 <kbd>R</kbd> 投 <kbd>T</kbd> 气功波 <kbd>Y</kbd> 必杀；2P 用方向键，<kbd>,</kbd> 拳 <kbd>.</kbd> 腿 <kbd>/</kbd> 格挡 <kbd>M</kbd> 投 <kbd>L</kbd> 气功波 <kbd>;</kbd> 必杀。</li>
+        <li>训练场里按 <kbd>T</kbd> 切换木桩：站着 / 会格挡 / 会还手。气是满的，随便放必杀。</li>
+      </ul>
+      <div class="row"><button class="big" id="moves-close">知道了</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-pause" hidden>
+    <div class="card">
+      <h2>暂停</h2>
+      <div class="row">
+        <button class="big" id="p-resume">继续</button>
+        <button class="big ghost" id="p-moves">招式表</button>
+        <button class="big ghost" id="p-menu">回主菜单</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-over" hidden>
+    <div class="card">
+      <h2 id="over-title">胜</h2>
+      <p id="over-sub"></p>
+      <div class="stats">
+        <div class="stat"><b id="st-combo">0</b><span>最高连击</span></div>
+        <div class="stat"><b id="st-dmg">0</b><span>造成伤害</span></div>
+        <div class="stat"><b id="st-perfect">0</b><span>完美格挡</span></div>
+        <div class="stat"><b id="st-ult">0</b><span>必杀命中</span></div>
+      </div>
+      <div class="row">
+        <button class="big" id="o-again">再来一局</button>
+        <button class="big ghost" id="o-menu">回主菜单</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="touch" aria-hidden="true">
+    <div class="pad dir">
+      <span></span><button data-a="up">▲</button><span></span>
+      <button data-a="left">◀</button><button data-a="down">▼</button><button data-a="right">▶</button>
+    </div>
+    <div class="pad act">
+      <button data-a="punch">拳</button><button data-a="kick">腿</button><button data-a="block">挡</button><button data-a="dash">冲</button>
+      <button data-a="throw">投</button><button data-a="blast" class="r">波</button><button data-a="ult" class="r">必</button><button data-a="up">跳</button>
+    </div>
+  </div>
+</div>
+
+<script src="src/game.js"></script>
+</body>
+</html>
